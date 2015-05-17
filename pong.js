@@ -40,11 +40,51 @@ var canvas = document.getElementById("canvas"),
 		over = 0, // flag varialbe, cahnged when the game is over
 		init, // variable to initialize animation
 		paddleHit;
+		inc=10; // increment of paddles
+		key1up=false;
+		key1down=false;
+		key2up=false;
+		key2down=false;
 
 // Add mousemove and mousedown events to the canvas
-canvas.addEventListener("mousemove", trackPosition, true);
+//canvas.addEventListener("mousemove", trackPosition, true);
 canvas.addEventListener("mousedown", btnClick, true);
-canvas.addEventListener( "keydown", doKeyDown, true);
+
+function handleDown(e) {
+		switch(e.keyCode) {
+		case 81:
+			key2up=true;
+		break;
+		case 87:
+			key2down=true;
+		break;
+		case 79:
+			key1up=true;
+		break;
+		case 80:
+			key1down=true;
+		break;
+		}
+}
+function handleUp(e) {
+		switch(e.keyCode) {
+		case 81:
+			key2up=false;
+		break;
+		case 87:
+			key2down=false;
+		break;
+		case 79:
+			key1up=false;
+		break;
+		case 80:
+			key1down=false;
+		break;
+		}
+}
+
+window.addEventListener('keydown', handleDown, true);
+window.addEventListener('keyup', handleUp, true);
 // Initialise the collision sound
 collision = document.getElementById("collide");
 
@@ -65,7 +105,7 @@ function Paddle(pos) {
 	this.h = 150;
 	
 	// Paddle's position
-	this.y = W/2 - this.h/2;
+	this.y = H/2 - this.h/2;
 	this.x = (pos == "top") ? 50 : W - this.w-50;
 	
 }
@@ -150,7 +190,7 @@ function draw() {
 	for(var i = 0; i < paddles.length; i++) {
 		p = paddles[i];
 		
-		ctx.fillStyle = "red";
+		ctx.fillStyle = "white";
 		ctx.fillRect(p.x, p.y, p.w, p.h);
 	}
 	
@@ -173,35 +213,34 @@ function trackPosition(e) {
 	mouse.x = e.pageX;
 	mouse.y = e.pageY;
 }
-function doKeyDown(e) {
-//alert(e.keyCode);
-		for(var i = 1; i < paddles.length; i++) {
-			p = paddles[i];
-			p.y+= 10;
-		}	
-}
+
 // Function to update positions, score and everything.
 // Basically, the main game logic is defined here
 function update() {
-	
 	// Update scores
 	updateScore(); 
 	
 	// Move the paddles on mouse move
-	if(mouse.x && mouse.y) {
+	/*if(mouse.x && mouse.y) {
 		for(var i = 1; i < paddles.length; i++) {
 			p = paddles[i];
 			p.y = mouse.y - p.h/2;
 		}		
-	}
+	}*/
+	p1 = paddles[1];
+	p2 = paddles[2];
+	
+	if(key1up) p1.y+=inc;
+	else if(key1down) p1.y-=inc;
+	if(key2up) p2.y+=inc;
+	else if(key2down) p2.y-=inc;
 	
 	// Move the ball
 	ball.x += ball.vx;
 	ball.y += ball.vy;
 	
 	// Collision with paddles
-	p1 = paddles[1];
-	p2 = paddles[2];
+	
 	
 	// If the ball strikes with paddles,
 	// invert the y-velocity vector of ball,
