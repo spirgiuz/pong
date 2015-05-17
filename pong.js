@@ -390,14 +390,7 @@ function collideAction(ball, p) {
 	
 	points++;
 	increaseSpd();
-	
-	if(collision) {
-		if(points > 0) 
-			collision.pause();
-		
-		collision.currentTime = 0;
-		collision.play();
-	}
+
 	
 	particlePos.y = ball.y;
 	flag = 1;
@@ -473,11 +466,18 @@ function animloop() {
 // Function to execute at startup
 function startScreen() {
 	//draw();
-	
+		if(collision) {
+		//if(points > 0) 
+		//	collision.pause();
+		
+		collision.currentTime = 0;
+		collision.play();
+	}
 	paintCanvas();
 	startBtn.draw();
 	mapBtn.draw();
 	speedBtn.draw();
+	
 }
 
 // On button click (Restart and start)
@@ -490,7 +490,7 @@ function btnClick(e) {
 	// Click start button
 	if(mx >= startBtn.x && mx <= startBtn.x + startBtn.w && my >= startBtn.y && my<=startBtn.x+startBtn.h) {
 		animloop();
-		
+
 		// Delete the start button after clicking it
 		startBtn = {};
 	}
