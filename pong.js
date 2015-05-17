@@ -37,6 +37,8 @@ var canvas = document.getElementById("canvas"),
 		multipler = 1, // Varialbe to control the direction of sparks
 		startBtn = {}, // Start button object
 		restartBtn = {}, // Restart button object
+		mapBtn={},
+		speedBtn={},
 		over = 0, // flag varialbe, cahnged when the game is over
 		init, // variable to initialize animation
 		inc=10, // increment of paddles
@@ -135,14 +137,49 @@ ball = {
 		ctx.fill();
 	}
 };
-
+mapBtn= {
+	w: 100,
+	h: 50,
+	x: W/2 - 50,
+	y: H/2 + 25,
+	
+		draw: function() {
+		ctx.strokeStyle = "white";
+		ctx.lineWidth = "2";
+		ctx.strokeRect(this.x, this.y, this.w, this.h);
+		
+		ctx.font = "18px Arial, sans-serif";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		ctx.fillStyle = "white";
+		ctx.fillText("Map", W/2, H/2+50 );
+	}
+};
+speedBtn= {
+	w: 100,
+	h: 50,
+	x: W/2 - 50,
+	y: H/2 - 25,
+	
+		draw: function() {
+		ctx.strokeStyle = "white";
+		ctx.lineWidth = "2";
+		ctx.strokeRect(this.x, this.y, this.w, this.h);
+		
+		ctx.font = "18px Arial, sans-serif";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		ctx.fillStyle = "white";
+		ctx.fillText("Speed", W/2, H/2 );
+	}
+}
 
 // Start Button object
 startBtn = {
 	w: 100,
 	h: 50,
 	x: W/2 - 50,
-	y: H/2 - 25,
+	y: H/2 - 75,
 	
 	draw: function() {
 		ctx.strokeStyle = "white";
@@ -152,8 +189,8 @@ startBtn = {
 		ctx.font = "18px Arial, sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		ctx.fillStlye = "white";
-		ctx.fillText("Start", W/2, H/2 );
+		ctx.fillStyle = "white";
+		ctx.fillText("Start", W/2, H/2-50 );
 	}
 };
 
@@ -401,7 +438,8 @@ function gameOver(player) {
 	// Stop the Animation
 		ball.x= W/2;
 		ball.y=H/2+50;
-		ball.vx=4;
+		
+		ball.vx=Math.floor(Math.random() * 11) + 3;
 		ball.vy=8;
 		if(player==2) { ball.vx*=-1; ball.vy*=-1 };
 		
@@ -426,8 +464,12 @@ function animloop() {
 
 // Function to execute at startup
 function startScreen() {
-	draw();
+	//draw();
+	
+	paintCanvas();
 	startBtn.draw();
+	mapBtn.draw();
+	speedBtn.draw();
 }
 
 // On button click (Restart and start)
@@ -455,6 +497,10 @@ function btnClick(e) {
 			p2pts=0;
 			ball.vx = 4;
 			ball.vy = 8;
+			if(d.getTime()%2==0) {
+			ball.vx*=-1;
+			ball.vy*=-1;
+			}
 			animloop();
 			
 			over = 0;
