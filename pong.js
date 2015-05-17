@@ -24,7 +24,7 @@ window.cancelRequestAnimFrame = ( function() {
 var canvas = document.getElementById("canvas"),
 		ctx = canvas.getContext("2d"), // Create canvas context
 		W = window.innerWidth-100, // Window's width
-		H = window.innerHeight, // Window's height
+		H = window.innerHeight-100, // Window's height
 		particles = [], // Array containing particles
 		ball = {}, // Ball object
 		paddles = [2], // Array containing two paddles
@@ -39,12 +39,15 @@ var canvas = document.getElementById("canvas"),
 		restartBtn = {}, // Restart button object
 		over = 0, // flag varialbe, cahnged when the game is over
 		init, // variable to initialize animation
+		inc=10, // increment of paddles
+		key1up=false,
+		key1down=false,
+		key2up=false,
+		key2down=false,
+		p1pts=0,
+		p2pts=0,
 		paddleHit;
-		inc=10; // increment of paddles
-		key1up=false;
-		key1down=false;
-		key2up=false;
-		key2down=false;
+
 
 // Add mousemove and mousedown events to the canvas
 //canvas.addEventListener("mousemove", trackPosition, true);
@@ -107,6 +110,7 @@ function Paddle(pos) {
 	// Paddle's position
 	this.y = H/2 - this.h/2;
 	this.x = (pos == "top") ? 50 : W - this.w-50;
+	this.pos=pos;
 	
 }
 
@@ -258,8 +262,8 @@ function update() {
 	} 
 	
 	else {
-		// Collide with walls, If the ball hits the top/bottom,
-		// walls, run gameOver() function
+		// If ball strikes the horizontal walls, invert the 
+		// x-velocity vector of ball
 		if(ball.y + ball.r > H) {
 			ball.vy = -ball.vy;
 			ball.y = H - ball.r;
@@ -272,18 +276,18 @@ function update() {
 			//gameOver();
 		}
 		
-		// If ball strikes the vertical walls, invert the 
-		// x-velocity vector of ball
+		// Collide with walls, If the ball hits the vertical
+		// walls, run gameOver() function
 		if(ball.x + ball.r > W) {
 			//ball.vx = -ball.vx;
 			ball.x = W - ball.r;
-			gameOver();
+			gameOver(1);
 		}
 		
 		else if(ball.x -ball.r < 0) {
 			//ball.vx = -ball.vx;
 			ball.x = ball.r;
-			gameOver();
+			gameOver(2);
 		}
 	}
 	
@@ -324,16 +328,18 @@ function collides(b, p) {
 //Do this when collides == true
 function collideAction(ball, p) {
 	ball.vx = -ball.vx;
-	
-	if(paddleHit == 1) {
+	console.log(p.pos);
+	//if(paddleHit == 1) {
+	if(p.pos=="bottom") {
 		ball.x = p.x - p.w;
 		particlePos.x = ball.x + ball.r;
 		multiplier = -1;	
 	}
 	
-	else if(paddleHit == 2) {
-		ball.x = p.w - ball.r;
-		particlePos.x = ball.x - ball.r;
+	//else if(paddleHit == 2) {
+	else if(p.pos=="top") {
+		ball.x = p.w + ball.r+p.x;
+		particlePos.x = ball.x + ball.r;
 		multiplier = 1;	
 	}
 	
@@ -379,25 +385,37 @@ function updateScore() {
 	ctx.font = "16px Arial, sans-serif";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
-	ctx.fillText("Score: " + points, 20, 20 );
+	ctx.fillText(p1pts+":"+p2pts, W/2, 20 );
 }
 
 // Function to run when the game overs
-function gameOver() {
-	ctx.fillStlye = "white";
+function gameOver(player) {
+	if(player==1) p1pts++;
+	else p2pts++;
+	/*ctx.fillStlye = "white";
 	ctx.font = "20px Arial, sans-serif";
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
-	ctx.fillText("Game Over - You scored "+points+" points!", W/2, H/2 + 25 );
+	ctx.fillText("Game Over - You scored "+points+" points!", W/2, H/2 + 25 );*/
 	
 	// Stop the Animation
-	cancelRequestAnimFrame(init);
+		ball.x= W/2;
+		ball.y=H/2+50;
+		ball.vx=4;
+		ball.vy=8;
+		if(player==2) { ball.vx*=-1; ball.vy*=-1 };
+		
 	
 	// Set the over flag
-	over = 1;
+	if(p1pts>=11 || p2pts>=11) {
+		cancelRequestAnimFrame(init);
+		over = 1;
+		// Show the restart button
+		restartBtn.draw();
+	}
 	
-	// Show the restart button
-	restartBtn.draw();
+	
+	
 }
 
 // Function for running the whole animation
@@ -433,6 +451,8 @@ function btnClick(e) {
 			ball.x = W/2;
 			ball.y = H/2+50;
 			points = 0;
+			p1pts=0;
+			p2pts=0;
 			ball.vx = 4;
 			ball.vy = 8;
 			animloop();
