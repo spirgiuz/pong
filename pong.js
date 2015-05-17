@@ -23,7 +23,7 @@ window.cancelRequestAnimFrame = ( function() {
 // Initialize canvas and required variables
 var canvas = document.getElementById("canvas"),
 		ctx = canvas.getContext("2d"), // Create canvas context
-		W = window.innerWidth, // Window's width
+		W = window.innerWidth-100, // Window's width
 		H = window.innerHeight, // Window's height
 		particles = [], // Array containing particles
 		ball = {}, // Ball object
@@ -44,7 +44,7 @@ var canvas = document.getElementById("canvas"),
 // Add mousemove and mousedown events to the canvas
 canvas.addEventListener("mousemove", trackPosition, true);
 canvas.addEventListener("mousedown", btnClick, true);
-
+canvas.addEventListener( "keydown", doKeyDown, true);
 // Initialise the collision sound
 collision = document.getElementById("collide");
 
@@ -66,7 +66,7 @@ function Paddle(pos) {
 	
 	// Paddle's position
 	this.y = W/2 - this.h/2;
-	this.x = (pos == "top") ? 0 : H - this.h;
+	this.x = (pos == "top") ? 50 : W - this.w-50;
 	
 }
 
@@ -150,7 +150,7 @@ function draw() {
 	for(var i = 0; i < paddles.length; i++) {
 		p = paddles[i];
 		
-		ctx.fillStyle = "white";
+		ctx.fillStyle = "red";
 		ctx.fillRect(p.x, p.y, p.w, p.h);
 	}
 	
@@ -173,7 +173,13 @@ function trackPosition(e) {
 	mouse.x = e.pageX;
 	mouse.y = e.pageY;
 }
-
+function doKeyDown(e) {
+//alert(e.keyCode);
+		for(var i = 1; i < paddles.length; i++) {
+			p = paddles[i];
+			p.y+= 10;
+		}	
+}
 // Function to update positions, score and everything.
 // Basically, the main game logic is defined here
 function update() {
@@ -216,25 +222,29 @@ function update() {
 		// Collide with walls, If the ball hits the top/bottom,
 		// walls, run gameOver() function
 		if(ball.y + ball.r > H) {
+			ball.vy = -ball.vy;
 			ball.y = H - ball.r;
-			gameOver();
+			//gameOver();
 		} 
 		
 		else if(ball.y < 0) {
+			ball.vy = -ball.vy;
 			ball.y = ball.r;
-			gameOver();
+			//gameOver();
 		}
 		
 		// If ball strikes the vertical walls, invert the 
 		// x-velocity vector of ball
 		if(ball.x + ball.r > W) {
-			ball.vx = -ball.vx;
+			//ball.vx = -ball.vx;
 			ball.x = W - ball.r;
+			gameOver();
 		}
 		
 		else if(ball.x -ball.r < 0) {
-			ball.vx = -ball.vx;
+			//ball.vx = -ball.vx;
 			ball.x = ball.r;
+			gameOver();
 		}
 	}
 	
@@ -274,17 +284,17 @@ function collides(b, p) {
 
 //Do this when collides == true
 function collideAction(ball, p) {
-	ball.vy = -ball.vy;
+	ball.vx = -ball.vx;
 	
 	if(paddleHit == 1) {
-		ball.y = p.y - p.h;
-		particlePos.y = ball.y + ball.r;
+		ball.x = p.x - p.w;
+		particlePos.x = ball.x + ball.r;
 		multiplier = -1;	
 	}
 	
 	else if(paddleHit == 2) {
-		ball.y = p.h + ball.r;
-		particlePos.y = ball.y - ball.r;
+		ball.x = p.w - ball.r;
+		particlePos.x = ball.x - ball.r;
 		multiplier = 1;	
 	}
 	
@@ -299,7 +309,7 @@ function collideAction(ball, p) {
 		collision.play();
 	}
 	
-	particlePos.x = ball.x;
+	particlePos.y = ball.y;
 	flag = 1;
 }
 
@@ -381,8 +391,8 @@ function btnClick(e) {
 	// If the game is over, and the restart button is clicked
 	if(over == 1) {
 		if(mx >= restartBtn.x && mx <= restartBtn.x + restartBtn.w) {
-			ball.x = 20;
-			ball.y = 20;
+			ball.x = W/2;
+			ball.y = H/2+50;
 			points = 0;
 			ball.vx = 4;
 			ball.vy = 8;
@@ -390,8 +400,9 @@ function btnClick(e) {
 			
 			over = 0;
 		}
-	}
+	}	
 }
+
 
 // Show the start screen
 startScreen();
