@@ -52,7 +52,7 @@ var canvas = document.getElementById("canvas"),
 
 
 // Add mousemove and mousedown events to the canvas
-//canvas.addEventListener("mousemove", trackPosition, true);
+canvas.addEventListener("mousemove", trackPosition, true);
 canvas.addEventListener("mousedown", btnClick, true);
 
 function handleDown(e) {
@@ -141,18 +141,22 @@ mapBtn= {
 	w: 100,
 	h: 50,
 	x: W/2 - 50,
-	y: H/2 + 25,
+	y: H/2 + 30,
 	
 		draw: function() {
 		ctx.strokeStyle = "white";
 		ctx.lineWidth = "2";
 		ctx.strokeRect(this.x, this.y, this.w, this.h);
+		//ctx.strokeRect(this.x-this.w-10, this.y, this.w, this.h);
+		//ctx.strokeRect(this.x+this.w+10, this.y, this.w, this.h);
 		
 		ctx.font = "18px Arial, sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = "white";
-		ctx.fillText("Map", W/2, H/2+50 );
+		ctx.fillText("Default", W/2, H/2+60 );
+		ctx.fillText("Map 1", W/2-this.w-10, H/2+60 );
+		ctx.fillText("Map 2", W/2+this.w+10, H/2+60 );
 	}
 };
 speedBtn= {
@@ -165,12 +169,16 @@ speedBtn= {
 		ctx.strokeStyle = "white";
 		ctx.lineWidth = "2";
 		ctx.strokeRect(this.x, this.y, this.w, this.h);
+		//ctx.strokeRect(this.x-this.w-10, this.y, this.w, this.h);
+		//ctx.strokeRect(this.x+this.w+10, this.y, this.w, this.h);
 		
 		ctx.font = "18px Arial, sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = "white";
-		ctx.fillText("Speed", W/2, H/2 );
+		ctx.fillText("0.5x", W/2-this.w-10, H/2 );
+		ctx.fillText("1x Speed", W/2, H/2 );
+		ctx.fillText("2x", W/2+this.w+10, H/2 );
 	}
 }
 
@@ -179,7 +187,7 @@ startBtn = {
 	w: 100,
 	h: 50,
 	x: W/2 - 50,
-	y: H/2 - 75,
+	y: H/2 - 80,
 	
 	draw: function() {
 		ctx.strokeStyle = "white";
@@ -190,7 +198,7 @@ startBtn = {
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = "white";
-		ctx.fillText("Start", W/2, H/2-50 );
+		ctx.fillText("Start", W/2, H/2-60 );
 	}
 };
 
@@ -480,7 +488,7 @@ function btnClick(e) {
 			my = e.pageY;
 	
 	// Click start button
-	if(mx >= startBtn.x && mx <= startBtn.x + startBtn.w) {
+	if(mx >= startBtn.x && mx <= startBtn.x + startBtn.w && my >= startBtn.y && my<=startBtn.x+startBtn.h) {
 		animloop();
 		
 		// Delete the start button after clicking it
